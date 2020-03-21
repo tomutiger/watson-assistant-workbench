@@ -108,7 +108,7 @@ def convertNode(nodeJSON):
                  contextXML.text = ""
         else:
             if isinstance(nodeJSON['context'], dict):
-                nodeJSON['context'].pop('', 'unused value to remove ocasional "":"" from context')
+                nodeJSON['context'].pop('', 'unused value to remove occasional "":"" from context')
             convertAll(nodeXML, nodeJSON, 'context')
     #output
     if 'output' in nodeJSON:
