@@ -701,9 +701,12 @@ def printNodes(root, parent, dialogJSON):
                 logger.warning('missing goto target in node: %s', nodeXML.find('name').text)
             elif nodeXML.find('goto').find('target').text == '::FIRST_SIBLING':
                 nodeXML.find('goto').find('target').text = next(x for x in root if x.tag == 'node').find('name').text
-            gotoJson = {'dialog_node':nodeXML.find('goto').find('target').text}
+            gotoJson = {}
             gotoJson['behavior'] = nodeXML.find('goto').find('behavior').text if nodeXML.find('goto').find('behavior') is not None else DEFAULT_BEHAVIOR
-            gotoJson['selector'] = nodeXML.find('goto').find('selector').text if nodeXML.find('goto').find('selector') is not None else DEFAULT_SELECTOR
+            if nodeXML.find('goto').find('target') is not None:
+                gotoJson['dialog_node'] = nodeXML.find('goto').find('target').text
+            if nodeXML.find('goto').find('selector') is not None:
+                gotoJson['selector'] = nodeXML.find('goto').find('selector').text
             nodeJSON['next_step'] = gotoJson
         # PARENT
         if parent is not None:

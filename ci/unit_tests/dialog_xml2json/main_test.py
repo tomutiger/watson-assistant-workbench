@@ -114,7 +114,7 @@ class TestMain(BaseTestCaseCapture):
             ("autogenerate_typeValid.xml", "autogenerate_typeInvalid.xml",
             "Element 'autogenerate': The attribute 'type' is required but missing."),
             ("goto_targetValid.xml", "goto_targetInvalid.xml",
-            "Element 'goto': Missing child element(s). Expected is one of ( behavior, target )."),
+            "Element 'goto': Missing child element(s). Expected is ( behavior )."),
             ("node_attributeValid.xml", "node_attributeInvalid.xml",
             "Element 'node', attribute 'nonexistentAttribute': The attribute 'nonexistentAttribute' is not allowed."),
             ("node_singleElementValid.xml", "node_singleElementInvalid.xml",
