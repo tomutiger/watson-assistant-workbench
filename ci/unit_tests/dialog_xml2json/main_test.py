@@ -44,7 +44,8 @@ class TestMain(BaseTestCaseCapture):
     params = {
         "test_validToJsonTransformation": [{'category': 'Actions'}, 
                                            {'category': 'Bool'},
-                                           {'category': 'NodeTypes'}],
+                                           {'category': 'NodeTypes'},
+                                           {'category': 'Slots'}],
     }
 
     @classmethod
