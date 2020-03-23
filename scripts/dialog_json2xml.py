@@ -38,7 +38,8 @@ def convertDialog(dialogNodesJSON):
     #print dialogNodesJSON
     # find root
     rootJSON = findNode(dialogNodesJSON, None, None)
-    expandNode(dialogNodesJSON, dialogXML, rootJSON)
+    if rootJSON:
+        expandNode(dialogNodesJSON, dialogXML, rootJSON)
     if (len(dialogNodesJSON) > 0):
         logger.error("There are " + str(len(dialogNodesJSON)) + " unprocessed nodes: " + str(dialogNodesJSON))
     return dialogXML
