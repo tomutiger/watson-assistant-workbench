@@ -616,6 +616,8 @@ def printNodes(root, parent, dialogJSON):
             nodeJSON['type'] = nodeXML.find('type').text
         elif nodeXML.find('slots') is not None:
             nodeJSON['type'] = "frame"
+        elif nodeXML.tag == 'slot':
+            nodeJSON['type'] = "slot"
         # disabled
         if nodeXML.find('disabled') is not None:
             if nodeXML.find('disabled').text in ["True", "true"]:
@@ -729,20 +731,11 @@ def printNodes(root, parent, dialogJSON):
         # CLOSE NODE
         previousSibling = nodeXML
 
-        # ADD ALL CHILDREN NODES
-        nodes = nodeXML.find('nodes')
-        if nodes is not None:
-            children.extend(nodes)
-
-        # ADD ALL SLOTS (FRAME FUNCTIONALITY)
-        slots = nodeXML.find('slots')
-        if slots is not None:
-            children.extend(slots)
-
-        # ADD ALL HANDLERS (FRAME FUNCTIONALITY)
-        handlers = nodeXML.find('handlers')
-        if handlers is not None:
-            children.extend(handlers)
+        for node in list(nodeXML):
+            if node.tag in ['node', 'slot', 'handler']:
+                children.append(node)
+            if node.tag in ['nodes', 'slots', 'handlers']:
+                children.extend(node)
 
         # PROCESS ALL CHILDREN
         if children:
