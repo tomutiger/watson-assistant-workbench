@@ -281,6 +281,7 @@
 <xs:complexType name="slotSchema">
     <xs:all>
         <xs:element name="handlers" type="handlersSchema" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="output" type="outputSchema" minOccurs="0" maxOccurs="1"/>
     </xs:all>
     <xs:attribute name="variable" use="required" type="xs:string"/>
     <xs:attribute name="scope" type="xs:string"/>

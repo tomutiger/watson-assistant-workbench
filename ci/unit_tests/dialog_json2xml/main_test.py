@@ -16,23 +16,24 @@ limitations under the License.
 import os
 
 from lxml import etree
-import pytest
 
 
 import dialog_json2xml
 
 from ...test_utils import BaseTestCaseCapture
 
-# From http://doc.pytest.org/en/latest/example/parametrize.html#parametrizing-test-methods-through-per-class-configuration
+
+# From # http://doc.pytest.org/en/latest/example/parametrize.html#parametrizing-test-methods-through-per-class-configuration
 def pytest_generate_tests(metafunc):
     # called once per each test function
     funcname = metafunc.function.__name__
-    if funcname in metafunc.cls.params: 
+    if funcname in metafunc.cls.params:
         funcarglist = metafunc.cls.params[metafunc.function.__name__]
         argnames = sorted(funcarglist[0])
         metafunc.parametrize(
             argnames, [[funcargs[name] for name in argnames] for funcargs in funcarglist]
         )
+
 
 class TestMain(BaseTestCaseCapture):
 
@@ -41,9 +42,10 @@ class TestMain(BaseTestCaseCapture):
 
     # a map specifying multiple argument sets for a test method
     params = {
-        "test_validToXmlTransformation": [{'category': 'Actions'}, 
+        "test_validToXmlTransformation": [{'category': 'Actions'},
                                           {'category': 'Bool'},
-                                          {'category': 'NodeTypes'}]
+                                          {'category': 'NodeTypes'},
+                                          {'category': 'Slots'}]
     }
 
     @classmethod
@@ -59,14 +61,17 @@ class TestMain(BaseTestCaseCapture):
         """Tests if two xml files are equal."""
         with open(xml1path, 'r') as xml1File:
             xml1 = etree.XML(xml1File.read(), etree.XMLParser(remove_blank_text=True))
-            for parent in xml1.xpath('//*[./*]'): # Search for parent elements
+            for parent in xml1.xpath('//*[./*]'):  # Search for parent elements
                 parent[:] = sorted(parent, key=lambda x: x.tag)
+        # with open(xml2path, 'r') as xml2File:
+        #     print(f'{xml2File.read()}')
         with open(xml2path, 'r') as xml2File:
             xml2 = etree.XML(xml2File.read(), etree.XMLParser(remove_blank_text=True))
-            for parent in xml2.xpath('//*[./*]'): # Search for parent elements
+            for parent in xml2.xpath('//*[./*]'):  # Search for parent elements
                 parent[:] = sorted(parent, key=lambda x: x.tag)
 
-        assert etree.tostring(xml1) == etree.tostring(xml2)
+        assert etree.tostring(xml1, encoding=str, pretty_print=True) == \
+               etree.tostring(xml2, encoding=str, pretty_print=True)
 
     def test_validToXmlTransformation(self, category):
         """Tests if the script successfully completes with valid input file"""
