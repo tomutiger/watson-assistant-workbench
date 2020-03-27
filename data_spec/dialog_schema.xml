@@ -261,6 +261,7 @@
         <xs:element name="output" type="outputSchema" minOccurs="0" maxOccurs="1"/>
     </xs:all>
     <xs:attribute name="eventName" use="required" type="eventNameSchema"/>
+    <xs:attribute name="name" type="xs:string"/>
     <xs:attribute name="scope" type="xs:string"/>
 </xs:complexType>
 
@@ -284,6 +285,7 @@
         <xs:element name="output" type="outputSchema" minOccurs="0" maxOccurs="1"/>
     </xs:all>
     <xs:attribute name="variable" use="required" type="xs:string"/>
+    <xs:attribute name="name" type="xs:string"/>
     <xs:attribute name="scope" type="xs:string"/>
 </xs:complexType>
 
