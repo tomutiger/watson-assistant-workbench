@@ -259,6 +259,7 @@
         <xs:element name="condition" type="conditionSchema" minOccurs="0" maxOccurs="1"/>
         <xs:element name="context" type="contextSchema" minOccurs="0" maxOccurs="1"/>
         <xs:element name="output" type="outputSchema" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="goto" type="gotoSchema" minOccurs="0" maxOccurs="1"/>
     </xs:all>
     <xs:attribute name="eventName" use="required" type="eventNameSchema"/>
     <xs:attribute name="name" type="xs:string"/>
@@ -281,6 +282,7 @@
 
 <xs:complexType name="slotSchema">
     <xs:all>
+        <xs:element name="condition" type="conditionSchema" minOccurs="0" maxOccurs="1"/>
         <xs:element name="handlers" type="handlersSchema" minOccurs="0" maxOccurs="1"/>
         <xs:element name="output" type="outputSchema" minOccurs="0" maxOccurs="1"/>
     </xs:all>
