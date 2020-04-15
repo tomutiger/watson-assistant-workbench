@@ -63,6 +63,16 @@ class TestMain(BaseTestCaseCapture):
     def teardown_method(self):
         workspace_delete.main(self.deleteParamsBase)
 
+    def _getWorkspaces(self, url, version, username, password):
+        nondeleteable = 'My first skill'
+
+        workspaces = getWorkspaces(url, version, username, password)
+        for workspace in workspaces:
+            if workspace['name'] == nondeleteable:
+                workspaces.remove(workspace)
+                break
+    
+        return workspaces 
 
     @pytest.mark.parametrize('envVarNameUsername, envVarNamePassword', [('WA_USERNAME', 'WA_PASSWORD')])
     def test_nameAndDescriptionSetup(self, envVarNameUsername, envVarNamePassword):
@@ -79,7 +89,7 @@ class TestMain(BaseTestCaseCapture):
 
         self.t_noExceptionAndLogMessage("Workspace successfully uploaded.", [deployParams])
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         assert len(workspaces) == 1
 
@@ -96,7 +106,7 @@ class TestMain(BaseTestCaseCapture):
 
         self.t_noExceptionAndLogMessage("Workspace successfully uploaded.", [deployParams])
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         assert len(workspaces) == 1
 
@@ -112,7 +122,7 @@ class TestMain(BaseTestCaseCapture):
 
         self.t_noExceptionAndLogMessage("Workspace successfully uploaded.", [deployParams])
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         assert len(workspaces) == 1
 
@@ -132,7 +142,7 @@ class TestMain(BaseTestCaseCapture):
 
         self.t_noExceptionAndLogMessage("Workspace successfully uploaded.", [deployParams])
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         assert len(workspaces) == 1
 
@@ -152,7 +162,7 @@ class TestMain(BaseTestCaseCapture):
                              '--conversation_url', self.workspacesUrl,
                              '--conversation_version', self.version,
                              '-v']
-        self.t_exitCodeAndLogMessage(1, "Unauthorized", [wrongParams])
+        self.t_exitCodeAndLogMessage(1, "403", [wrongParams])
 
 
     def test_args_basic(self):
