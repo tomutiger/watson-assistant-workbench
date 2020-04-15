@@ -77,7 +77,8 @@ def main(argv):
                 delattr(config, 'conversation_workspace_id')
         elif response.status_code == 400:
             logger.error("Error while deleting workspace  '%s', status code '%s' (invalid request)", workspace['name'], response.status_code)
-            sys.exit(1)
+            if workspace['name'] != 'My first skill':
+                sys.exit(1)
         else:
             logger.error("Error while deleting workspace  '%s', status code '%s'", workspace['name'], response.status_code)
             sys.exit(1)

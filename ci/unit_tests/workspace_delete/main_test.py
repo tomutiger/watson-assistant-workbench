@@ -67,16 +67,26 @@ class TestMain(BaseTestCaseCapture):
     def teardown_method(self):
         self._deleteAllWorkspaces()
 
+    def _getWorkspaces(self, url, version, username, password):
+        nondeleteable = 'My first skill'
+
+        workspaces = getWorkspaces(url, version, username, password)
+        for workspace in workspaces:
+            if workspace['name'] == nondeleteable:
+                workspaces.remove(workspace)
+                break
+    
+        return workspaces 
+
     def _deleteAllWorkspaces(self):
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         for workspace in workspaces:
             requestUrl = self.workspacesUrl + '/' + workspace['workspace_id'] + '?version=' + self.version
             requests.delete(requestUrl, auth=(self.username, self.password), headers={'Accept': 'text/html'})
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
-
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
         assert len(workspaces) == 0
 
     @pytest.mark.parametrize('envVarNameUsername, envVarNamePassword', [('WA_USERNAME', 'WA_PASSWORD')])
@@ -115,7 +125,7 @@ class TestMain(BaseTestCaseCapture):
         args = parser.parse_args(['--common_configFilePaths', createOutputConfigPath])
         createOutputConfig = Cfg(args)
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         # in workspaces on server there should be no workspace with id from config file
         workspacesFound = 0
@@ -161,7 +171,7 @@ class TestMain(BaseTestCaseCapture):
                              '--conversation_workspace_match_by_name', 'true'])
         self.t_noExceptionAndLogMessage("2 workspaces have been successfully deleted",[deleteParams])
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         # there should be no workspace with specified name in config file
         workspacesFound = 0
@@ -202,7 +212,7 @@ class TestMain(BaseTestCaseCapture):
                              '--conversation_workspace_name_pattern', 'regexp_*'])
         self.t_noExceptionAndLogMessage("2 workspaces have been successfully deleted",[deleteParams])
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         # there should be no workspace with name matching specified regex
         workspacesFound = 0
@@ -243,7 +253,7 @@ class TestMain(BaseTestCaseCapture):
                              '--conversation_workspace_name_pattern', '.*'])
         self.t_noExceptionAndLogMessage("3 workspaces have been successfully deleted",[deleteParams])
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         # there should be no workspace left
         assert len(workspaces) == 0
@@ -265,7 +275,7 @@ class TestMain(BaseTestCaseCapture):
                              '--conversation_workspace_name_pattern', 'workspace'])
         self.t_noExceptionAndLogMessage("No workspace has been deleted",[deleteParams])
 
-        workspaces = getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
+        workspaces = self._getWorkspaces(self.workspacesUrl, self.version, self.username, self.password)
 
         # there should be still one workspace left
         assert len(workspaces) == 1

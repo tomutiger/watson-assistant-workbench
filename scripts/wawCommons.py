@@ -577,53 +577,63 @@ def getFunctionResponseJson(cloudFunctionsUrl, urlNamespace, username, password,
         responseJson = functionResponse.json()
         activationId = responseJson['activationId']
         functionCallUrl = cloudFunctionsUrl + '/' + urlNamespace + '/activations/' + activationId + '/result'
-        logger.info("Trying to get function result from url '%s'", functionCallUrl)
-        functionResponse = requests.get(functionCallUrl, auth=(username, password),
+        max_attempts = 4
+        sleep_after_failure = 10
+        while True:
+            logger.info("Trying to get function result from url '%s'", functionCallUrl)
+            functionResponse = requests.get(functionCallUrl, auth=(username, password),
                                         headers={})
-        if functionResponse.status_code == 200:
+            if functionResponse.status_code == 200:
 
-            responseContentType = functionResponse.headers.get('content-type')
-            if responseContentType != 'application/json':
-                exception = CFCallException(
-                    functionName, 
-                    package, 
-                    functionResponse, 
-                    "Response content type is not json",
-                    None,
-                    {'activationId': activationId, 'contentType': responseContentType})
+                responseContentType = functionResponse.headers.get('content-type')
+                if responseContentType != 'application/json':
+                    exception = CFCallException(
+                        functionName, 
+                        package, 
+                        functionResponse, 
+                        "Response content type is not json",
+                        None,
+                        {'activationId': activationId, 'contentType': responseContentType})
+                    logger.error(exception)
+                    raise exception
+
+                responseJson = functionResponse.json()
+                if isinstance(responseJson, dict) and 'result' in responseJson:
+                    if isinstance(responseJson['result'], dict) and 'payload' in responseJson['result']:
+                        return responseJson['result']['payload']
+                    else:
+                        return responseJson['result']
+                else:
+                    exception = CFCallException(
+                        functionName, 
+                        package, 
+                        functionResponse, 
+                        "Bad response format received", 
+                        "expected was {\"result\":{\"payload\":\"<function_payload>\"}}", 
+                        {'activationId': activationId})
+                    logger.error(exception)
+                    raise exception
+            elif functionResponse.status_code == 404:
+                max_attempts = max_attempts - 1
+                if not max_attempts:
+                    logger.info("Results not ready. Giving up.")
+                    break
+                logger.info("Results not ready. Waiting for %d before retrying.", sleep_after_failure)
+                time.sleep(sleep_after_failure)
+            elif functionResponse.status_code in [403, 408]: # not so serious errors, the next request may be fine
+                # 403 Forbidden (could be just for specific package or function)
+                # 408 Request Timeout (could happen e.g. for CF that requests some REST APIs, e.g. Discovery service)
+                exception = CFCallStatusException(functionName, package, functionResponse, {'activationId': activationId})
                 logger.error(exception)
                 raise exception
-
-            responseJson = functionResponse.json()
-            if isinstance(responseJson, dict) and 'result' in responseJson\
-             and isinstance(responseJson['result'], dict) and 'payload' in responseJson['result']:
-                return responseJson['result']['payload']
-            else:
-                exception = CFCallException(
-                    functionName, 
-                    package, 
-                    functionResponse, 
-                    "Bad response format received", 
-                    "expected was {\"result\":{\"payload\":\"<function_payload>\"}}", 
-                    {'activationId': activationId})
-                logger.error(exception)
-                raise exception
-
-        elif functionResponse.status_code in [403, 404, 408]: # not so serious errors, the next request may be fine
-            # 403 Forbidden (could be just for specific package or function)
-            # 404 Not Found (action or package could be incorrectly specified for given request)
-            # 408 Request Timeout (could happen e.g. for CF that requests some REST APIs, e.g. Discovery service)
-            exception = CFCallStatusException(functionName, package, functionResponse, {'activationId': activationId})
-            logger.error(exception)
-            raise exception
-        else: # serious errors, stop the process
-            # 401 Unauthorized (while we use same credentials for all tests then we want to end after the first test returns bad authentification)
-            # 500 Internal Server Error (could happen that IBM Cloud has several issue and is not able to handle incoming requests,
-             # then it would be probably same for all requests)
-            # 502 Bad Gateway (when the CF raises exception, e.g. bad params were provided)
-            exception = CFCallStatusException(functionName, package, functionResponse, {'activationId': activationId})
-            logger.critical(exception)
-            sys.exit(1)
+            else: # serious errors, stop the process
+                # 401 Unauthorized (while we use same credentials for all tests then we want to end after the first test returns bad authentification)
+                # 500 Internal Server Error (could happen that IBM Cloud has several issue and is not able to handle incoming requests,
+                # then it would be probably same for all requests)
+                # 502 Bad Gateway (when the CF raises exception, e.g. bad params were provided)
+                exception = CFCallStatusException(functionName, package, functionResponse, {'activationId': activationId})
+                logger.critical(exception)
+                sys.exit(1)
 
     elif functionResponse.status_code in [403, 404, 408]: # not so serious errors, the next request may be fine
         # 403 Forbidden (could be just for specific package or function)

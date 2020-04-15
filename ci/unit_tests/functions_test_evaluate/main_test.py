@@ -265,6 +265,25 @@ class TestMain(BaseTestCaseCapture):
             [testArgs] # params (*args, **kwargs)
         )
 
+    def clean_JUnitXmlLines(self, l1, l2):
+        clean = []
+        for line in [l1, l2]:
+            # remove timestamp because it is not static
+            line = re.sub(r' timestamp="[^"]*"', '', line)
+            # remove absolute path because it is not static
+            line = re.sub(r' from file [^ ]*no.json', '', line)
+            # Fix change in format of  <testsuites errors="10" failures="1" tests="16" time="50.0">
+            line = line.strip()
+            if line.startswith('<test'):
+                line = line.replace('/>', '')
+                line = line.split()
+                skipped = 'skipped="0"'
+                if skipped in line:
+                    line.remove(skipped)
+                line = ' '.join(sorted(line))
+            clean.append(line)
+        return tuple(clean)
+        
     def test_testMultiJUnitXml(self):
         ''' Tests if junit xml is generated correctly '''
         outputFilePath = os.path.abspath(os.path.join(self.testOutputPath, os.path.basename(self.testMultiJUnitXmlOutJsonPath).split('.')[0] + '.eval.json'))
@@ -274,12 +293,7 @@ class TestMain(BaseTestCaseCapture):
         self.t_noException([testArgs])
         with open(self.testMultiJUnitXmlRefEvalJUnitXmlPath, 'r') as f1, open(outputJUnitXmlFilePath, 'r') as f2:
             for l1, l2 in zip(f1, f2):
-                # remove timestamp because it is not static
-                l1 = re.sub(r' timestamp="[^"]*"', '', l1)
-                l2 = re.sub(r' timestamp="[^"]*"', '', l2)
-                # remove absolute path because it is not static
-                l1 = re.sub(r' from file [^ ]*no.json', '', l1)
-                l2 = re.sub(r' from file [^ ]*no.json', '', l2)
+                l1, l2 = self.clean_JUnitXmlLines(l1, l2)
                 assert l1 == l2
 
     def test_testMultiJUnitXmlWithClassAndSuitName(self):
@@ -291,12 +305,7 @@ class TestMain(BaseTestCaseCapture):
         self.t_noException([testArgs])
         with open(self.testMultiJUnitXmlWithClassAndSuitNameRefEvalJUnitXmlPath, 'r') as f1, open(outputJUnitXmlFilePath, 'r') as f2:
             for l1, l2 in zip(f1, f2):
-                # remove timestamp because it is not static
-                l1 = re.sub(r' timestamp="[^"]*"', '', l1)
-                l2 = re.sub(r' timestamp="[^"]*"', '', l2)
-                # remove absolute path because it is not static
-                l1 = re.sub(r' from file [^ ]*no.json', '', l1)
-                l2 = re.sub(r' from file [^ ]*no.json', '', l2)
+                l1, l2 = self.clean_JUnitXmlLines(l1, l2)
                 assert l1 == l2
 
     def test_raiseExceptionIfFails(self):
@@ -308,4 +317,3 @@ class TestMain(BaseTestCaseCapture):
             NameError,
             'FailedTestDetected',
             [testArgs])
-
