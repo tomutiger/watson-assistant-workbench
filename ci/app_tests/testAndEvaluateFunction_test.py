@@ -88,14 +88,11 @@ class TestTestAndEvaluateFunction(BaseTestCaseCapture):
             ]
 
         with open(testSingleAllInFileReplacePackageEvaJUnitXmlFilePath, 'r') as outputFile:
-            outputString = outputFile.read()
-            outputString = re.sub(r'time="[0-9\.]+"', 'time="TIME"', outputString)
-            outputString = re.sub(r'timestamp="[0-9\.:\- ]+"', 'timestamp="TIMESTAMP"', outputString)
-            assert outputString == \
-                '<?xml version="1.0" encoding="utf-8"?>\n' +\
-                '<testsuites errors="0" failures="0" tests="1" time="TIME">\n' +\
-                '\t<testsuite errors="0" failures="0" name="test_single_all_in_file_replace_package" ' +\
-                    'skipped="0" tests="1" time="TIME" timestamp="TIMESTAMP">\n' +\
-                '\t\t<testcase time="TIME"/>\n' +\
-                '\t</testsuite>\n' +\
-                '</testsuites>\n'
+            matched = False
+            for line in outputFile:
+                if line.startswith('<testsuites'):
+                    matched = True
+                    assert 'errors="0"' in line
+                    assert 'failures="0"' in line
+                    assert 'tests="1"' in line
+            assert matched
