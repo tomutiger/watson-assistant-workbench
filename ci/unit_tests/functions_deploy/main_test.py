@@ -78,7 +78,7 @@ class TestMain(BaseTestCaseCapture):
                 '--cloudfunctions_apikey', self.apikey]
             self.t_fun_noException(functions_delete_package.main, [params])
 
-    @pytest.mark.skipiffails(label='Cloud Functions, Invoking an action with blocking=true returns 202')
+    # @pytest.mark.skipiffails(label='Cloud Functions, Invoking an action with blocking=true returns 202')
     @pytest.mark.parametrize('useApikey', [True, False])
     def test_functionsUploadFromDirectory(self, useApikey):
         """Tests if functions_deploy uploads all supported functions from given directory."""
@@ -104,7 +104,7 @@ class TestMain(BaseTestCaseCapture):
         functionFileNames = [os.path.splitext(fileName)[0] for fileName in os.listdir(functionsDir)]
         assert set(functionNames) == set(functionFileNames)
 
-        # try to call particular functions
+        # try to call particular functions 
         for functionName in functionNames:
 
             responseJson = getFunctionResponseJson(self.cloudFunctionsUrl,
@@ -123,7 +123,9 @@ class TestMain(BaseTestCaseCapture):
     @pytest.mark.parametrize('useApikey', [True, False])
     def test_pythonVersionFunctions(self, useApikey):
         """Tests if it's possible to upload one function into two different version of runtime."""
-        for pythonVersion in [2, 3]:
+
+        # Error in response: The 'python:2' runtime is no longer supported. You may read and delete but not update or invoke this action.
+        for pythonVersion in [3]:
             params = ['-c', os.path.join(self.dataBasePath, 'python' + str(pythonVersion) + 'Functions.cfg'),
                       '--cloudfunctions_package', self.package, '--cloudfunctions_namespace', self.namespace,
                       '--cloudfunctions_url', self.cloudFunctionsUrl]
@@ -183,7 +185,7 @@ class TestMain(BaseTestCaseCapture):
 
         assert "String from helper function" == responseJson['test']
 
-    @pytest.mark.skipiffails(label='Cloud Functions, Invoking an action with blocking=true returns 202')
+    # @pytest.mark.skipiffails(label='Cloud Functions, Invoking an action with blocking=true returns 202')
     @pytest.mark.parametrize('useApikey', [True, False])
     def test_functionsUploadSequence(self, useApikey):
         """Tests if functions_deploy uploads sequences."""
