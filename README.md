@@ -4,8 +4,9 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/IBM/watson-assistant-workbench/releases/latest"><img src="https://img.shields.io/badge/dynamic/json.svg?color=blue&label=version&query=tag_name&url=https%3A%2F%2Fgithub.com%2FIBM%2Fwatson-assistant-workbench%2Freleases%2Flatest" alt="WAW-version" /></a>
-    <a href="https://www.python.org/downloads/release/python-350/"><img src="https://img.shields.io/badge/Python-3.5-Green.svg" alt="Python" /></a>
+    <a href="https://github.com/xverges/watson-assistant-workbench/releases/latest"><img src="https://img.shields.io/badge/dynamic/json.svg?color=blue&label=version&query=tag_name&url=https%3A%2F%2Fgithub.com%2Fxverges%2Fwatson-assistant-workbench%2Freleases%2Flatest" alt="WAW-version" /></a>
+    <a href="https://travis-ci.com/github/xverges/watson-assistant-workbench"><img src="https://travis-ci.com/xverges/watson-assistant-workbench.svg?branch=devel" alt="travis status" /></a>
+    <a href="https://www.python.org/downloads/release/python-380/"><img src="https://img.shields.io/badge/Python-3.8-Green.svg" alt="Python" /></a>
 </p>
 
 ## About
@@ -28,16 +29,16 @@ It contains a bundle of tools for generating WA workspace from the structure dat
 
 Currently supported conversation version is 2017-02-03 except:
 
-- Fuzzy matching, Folders and Digression are not supported.
+- Fuzzy matching, ~~Folders~~ and Digression are not supported.
 - A name of a dialog node still has to be unique as it is used as node ID.
-- Missing "slot_in_focus" property.
-- Slots are not supported in json to xml conversion scripts.
+- ~~Missing "slot_in_focus" property~~.
+- ~~Slots are not supported in json to xml conversion scripts~~.
 
 ---
 
 ## Prerequisites
 
-Scripts use python 3.5, used modules are listed in the [requirements.txt](/requirements.txt) file. To satisfy all requirements run
+Scripts use python 3.8, used modules are listed in the [requirements.txt](/requirements.txt) file. To satisfy all requirements run
 
 ```
 pip install -r requirements.txt
