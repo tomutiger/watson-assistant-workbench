@@ -77,7 +77,20 @@ class TestMain(BaseTestCaseCapture):
 
 
         with open(expectedJsonPath, 'r') as expectedJsonFile, open(outputJsonPath, 'r') as outputJsonFile:
-            assert json.load(expectedJsonFile) == json.load(outputJsonFile)
+            expected = json.load(expectedJsonFile)
+            actual =  json.load(outputJsonFile)
+            assert len(expected) == len(actual)
+            for index, expected_node in enumerate(expected):
+                if expected_node['dialog_node'] != actual[index]['dialog_node']:
+                    old_value = actual[index]['dialog_node']
+                    actual[index]['dialog_node'] = expected_node['dialog_node']
+                    inner_index = index + 1
+                    while inner_index < len(actual):
+                        for relationship in ['parent', 'previous_sibling']:
+                            if actual[inner_index][relationship] == old_value:
+                                actual[inner_index][relationship] = expected_node['dialog_node'] 
+                        inner_index += 1
+                assert expected_node == actual[index] 
 
 
     def test_mainMissingImport(self):
