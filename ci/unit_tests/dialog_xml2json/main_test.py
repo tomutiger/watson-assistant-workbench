@@ -87,7 +87,8 @@ class TestMain(BaseTestCaseCapture):
                     inner_index = index + 1
                     while inner_index < len(actual):
                         for relationship in ['parent', 'previous_sibling']:
-                            if actual[inner_index][relationship] == old_value:
+                            if relationship in actual[inner_index] and \
+                               actual[inner_index][relationship] == old_value:
                                 actual[inner_index][relationship] = expected_node['dialog_node'] 
                         inner_index += 1
                 assert expected_node == actual[index] 
