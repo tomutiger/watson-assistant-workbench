@@ -386,7 +386,10 @@ def generateNodes(root, parent, parentAbortSettings, parentAgainSettings, parent
             condition = node.find('condition')
             # TODO check if we generate condition 'anything_else' for nodes without condition
             # we want to generate CONTROL nodes before repeat section
-            if condition is None or condition.text == 'anything_else' or condition.text.startswith(('anything_else', '$tries')):
+            if condition is None or \
+               not condition.text or \
+               condition.text == 'anything_else' or \
+               condition.text.startswith(('anything_else', '$tries')):
                 indexOfInsertion = index
                 break
 
