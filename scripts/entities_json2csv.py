@@ -24,7 +24,7 @@ from wawCommons import getScriptLogger, openFile, setLoggerConfig, toEntityName
 logger = getScriptLogger(__file__)
 
 def main(argv):
-    parser = argparse.ArgumentParser(description='Decompose Bluemix conversation service entities in .json format to entity files in .csv format', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description='Decompose IBM Cloud assistant skill service entities in .json format to entity files in .csv format', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # positional arguments
     parser.add_argument('entities', help='file with entities in .json format')
     parser.add_argument('entitiesDir', help='directory with entities files')
@@ -77,6 +77,10 @@ def main(argv):
             with openFile(entityFileName, "w") as entityFile:
                 for value in values:
                     entityFile.write(';'.join(value) + "\n")
+                
+                if entityJSON["entity"]['fuzzy_match']:
+                    print("fuzzy match: ", entityJSON["entity"]['fuzzy_match'])
+                    entityFile.write('__fuzzy_match__\n')
 
     # write file with system entities
     with openFile(os.path.join(args.entitiesDir, "system_entities.csv"), 'w') as systemEntitiesFile:

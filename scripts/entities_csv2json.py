@@ -106,28 +106,31 @@ def main(argv):
                     line = line.split('#')[0]
                     line = line.strip()
                     if line:
-                        rawSynonyms = line.split(';')
-                        # strip and lower all items in line
-                        [x.strip().lower() for x in rawSynonyms]
-                        representativeValue = rawSynonyms[0]
-                        synonyms = sorted(list(set(rawSynonyms[1:])))
-                        # remove value from synonyms, so that duplicity with value is not possible
-                        if representativeValue in synonyms: synonyms.remove(representativeValue)
-                        valueJSON = {}
-                        if representativeValue[0] in '~':
-                            # all patterns are represented by the first value without first char (~)
-                            valueJSON['type'] = 'patterns'
-                            valueJSON['value'] = representativeValue[1:]
-                            # add all patterns
-                            if len(synonyms) > 0:
-                                valueJSON['patterns'] = synonyms
+                        if line.startswith('__fuzzy_match__'):
+                            entityJSON['fuzzy_match'] = True
                         else:
-                            # all synonyms are represented by the first value
-                            valueJSON['value'] = representativeValue
-                            # add all synonyms
-                            if len(synonyms) > 0:
-                                valueJSON['synonyms'] = synonyms
-                        valuesJSON.append(valueJSON)
+                            rawSynonyms = line.split(';')
+                            # strip and lower all items in line
+                            [x.strip().lower() for x in rawSynonyms]
+                            representativeValue = rawSynonyms[0]
+                            synonyms = sorted(list(set(rawSynonyms[1:])))
+                            # remove value from synonyms, so that duplicity with value is not possible
+                            if representativeValue in synonyms: synonyms.remove(representativeValue)
+                            valueJSON = {}
+                            if representativeValue[0] in '~':
+                                # all patterns are represented by the first value without first char (~)
+                                valueJSON['type'] = 'patterns'
+                                valueJSON['value'] = representativeValue[1:]
+                                # add all patterns
+                                if len(synonyms) > 0:
+                                    valueJSON['patterns'] = synonyms
+                            else:
+                                # all synonyms are represented by the first value
+                                valueJSON['value'] = representativeValue
+                                # add all synonyms
+                                if len(synonyms) > 0:
+                                    valueJSON['synonyms'] = synonyms
+                            valuesJSON.append(valueJSON)
                 entityJSON['values'] = valuesJSON
                 # Set fuzzy matching
                 if globalFuzzyMatching:
