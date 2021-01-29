@@ -78,8 +78,8 @@ def main(argv):
                 for value in values:
                     entityFile.write(';'.join(value) + "\n")
                 
-                if entityJSON["entity"]['fuzzy_match']:
-                    print("fuzzy match: ", entityJSON["entity"]['fuzzy_match'])
+                if "fuzzy_match" in entityJSON.keys():
+                    print("fuzzy match: ", entityJSON['fuzzy_match'])
                     entityFile.write('__fuzzy_match__\n')
 
     # write file with system entities
